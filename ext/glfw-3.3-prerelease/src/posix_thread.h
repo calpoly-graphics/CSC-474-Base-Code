@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 Win32 - www.glfw.org
+// GLFW 3.3 POSIX - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
@@ -25,45 +25,27 @@
 //
 //========================================================================
 
-#include "internal.h"
+#include <pthread.h>
+
+#define _GLFW_PLATFORM_TLS_STATE    _GLFWtlsPOSIX   posix
+#define _GLFW_PLATFORM_MUTEX_STATE  _GLFWmutexPOSIX posix
 
 
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-GLFWbool _glfwInitThreadLocalStorageWin32(void)
+// POSIX-specific thread local storage data
+//
+typedef struct _GLFWtlsPOSIX
 {
-    _glfw.win32_tls.context = TlsAlloc();
-    if (_glfw.win32_tls.context == TLS_OUT_OF_INDEXES)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Win32: Failed to allocate TLS index");
-        return GLFW_FALSE;
-    }
+    GLFWbool        allocated;
+    pthread_key_t   key;
 
-    _glfw.win32_tls.allocated = GLFW_TRUE;
-    return GLFW_TRUE;
-}
+} _GLFWtlsPOSIX;
 
-void _glfwTerminateThreadLocalStorageWin32(void)
+// POSIX-specific mutex data
+//
+typedef struct _GLFWmutexPOSIX
 {
-    if (_glfw.win32_tls.allocated)
-        TlsFree(_glfw.win32_tls.context);
-}
+    GLFWbool        allocated;
+    pthread_mutex_t handle;
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-void _glfwPlatformSetCurrentContext(_GLFWwindow* context)
-{
-    TlsSetValue(_glfw.win32_tls.context, context);
-}
-
-_GLFWwindow* _glfwPlatformGetCurrentContext(void)
-{
-    return TlsGetValue(_glfw.win32_tls.context);
-}
+} _GLFWmutexPOSIX;
 
