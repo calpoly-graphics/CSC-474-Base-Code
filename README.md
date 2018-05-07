@@ -1,5 +1,13 @@
 # CSC 474 Base Code
-Base code for computer graphics
+Base code for computer graphics.
+
+#### Controls:
+- P - toggle polygon mode (wireframe or solid)
+- WASD - forward and lateral movement
+- IKJLUO - local camera rotations along each axis (IK: x axis, JL: y axis, UO: z axis)
+- SPACE - capture/hide the mouse (this allows for infinite mouse movement in each direction)
+- mouse movement - If captured, the mouse position will affect the camera direction
+- mouse click and drag - updates the camera direction
 
 ![Screenshot](https://github.com/calpoly-graphics/CSC-474-Base-Code/blob/master/resources/screenshot.png)
 
