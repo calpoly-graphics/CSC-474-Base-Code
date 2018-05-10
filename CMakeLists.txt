@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 2.7)
+if(APPLE)
+  cmake_minimum_required(VERSION 3.9.6)
+else()
+  cmake_minimum_required(VERSION 3.6)
+endif()
 
 # Name of the project
 project(lab)
@@ -15,6 +19,13 @@ include_directories("ext/glad/include")
 
 # Set the executable.
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES} ${HEADERS} ${GLSL})
+
+# Set the default target for VS and Xcode
+if(APPLE)
+  set(CMAKE_XCODE_GENERATE_SCHEME TRUE)
+else()
+  set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT lab)
+endif()
 
 
 
