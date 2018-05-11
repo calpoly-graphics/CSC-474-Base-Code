@@ -143,7 +143,7 @@ else()
 
     if(FBX_INCLUDE_DIR)
        include_directories(${FBX_INCLUDE_DIR})
-       target_link_libraries(${CMAKE_PROJECT_NAME} $FBX_LIBRARY ${CMAKE_DL_LIBS})
+       target_link_libraries(${CMAKE_PROJECT_NAME} ${FBX_LIBRARY} ${CMAKE_DL_LIBS})
        message(STATUS "FBX environment variable found")
     else()
        # If the FBX_INCLUDE_DIR environment variable is not set, we assume
