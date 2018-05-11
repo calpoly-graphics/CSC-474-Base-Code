@@ -1,6 +1,7 @@
 #include "Program.h"
 #include <iostream>
 #include <vector>
+#include <cstring>
 #include "GLSL.h"
 
 void Program::setShaderNames(const std::string &v, const std::string &f, const std::string &g) {
