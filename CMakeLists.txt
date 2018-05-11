@@ -33,6 +33,7 @@ endif()
 # Get the GLFW environment variable.
 # There should be a CMakeLists.txt in the specified directory.
 set(GLFW_DIR "$ENV{GLFW_DIR}")
+set(FBX_INCLUDE_DIR "$ENV{FBX_INCLUDE_DIR}")
 # If there is no environment variable, search locally
 if(NOT GLFW_DIR)
   set(GLFW_DIR "ext/glfw-3.3-prerelease")
@@ -95,6 +96,30 @@ if(WIN32)
   # -Wall produces way too many warnings.
   # -pedantic is not supported.
   target_link_libraries(${CMAKE_PROJECT_NAME} opengl32.lib)
+  # Add FBX
+  # If there is no environment variable, search locally
+  if(NOT FBX_INCLUDE_DIR)
+     set(FBX_INCLUDE_DIR "C:/Program\ Files/Autodesk/FBX/FBX\ SDK/2019.0/include")
+  endif()
+  set(FBX_LIBRARY_DIR "C:/Program\ Files/Autodesk/FBX/FBX\ SDK/2019.0/lib/vs2015/x86/debug")
+
+  if(FBX_INCLUDE_DIR)
+     include_directories(${FBX_INCLUDE_DIR})
+     target_link_libraries(${CMAKE_PROJECT_NAME} ${FBX_LIBRARY_DIR}/libfbxsdk.lib)
+     message(STATUS "FBX environment variable `FBX_INCLUDE_DIR` not found, FBX must be installed with the system")
+  else()
+     message(STATUS "FBX environment variable `FBX_INCLUDE_DIR` not found, FBX must be installed with the system")
+  endif()
+
+  set(dllLoc ${FBX_LIBRARY_DIR}/libfbxsdk.dll)
+  set(dest ${CMAKE_CURRENT_BINARY_DIR}/libfbxsdk.dll)
+  add_custom_command(
+    TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${dllLoc} ${dest}
+    DEPENDS ${dest}
+    COMMENT "copies over dll for fbx sdk to build directory so it can be used during execution"
+  )
+
 else()
   # Enable all pedantic warnings.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -pedantic")
@@ -105,5 +130,25 @@ else()
   else()
     #Link the Linux OpenGL library
     target_link_libraries(${CMAKE_PROJECT_NAME} "GL" "dl")
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+    find_package(Threads REQUIRED)
+    target_link_libraries(${CMAKE_PROJECT_NAME} Threads::Threads)
+
+    # If there is no environment variable, search locally
+    if(NOT FBX_INCLUDE_DIR)
+       set(FBX_INCLUDE_DIR "/usr/include/fbxsdk")
+    endif()
+    set(FBX_LIBRARY "/usr/lib/gcc4/x64/release/libfbxsdk.a")
+
+
+    if(FBX_INCLUDE_DIR)
+       include_directories(${FBX_INCLUDE_DIR})
+       target_link_libraries(${CMAKE_PROJECT_NAME} $FBX_LIBRARY ${CMAKE_DL_LIBS})
+       message(STATUS "FBX environment variable found")
+    else()
+       # If the FBX_INCLUDE_DIR environment variable is not set, we assume
+       # the user has installed FBX properly on their system
+       message(STATUS "FBX environment variable `FBX_INCLUDE_DIR` not found, FBX must be installed with the system")
+    endif()
   endif()
 endif()

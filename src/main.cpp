@@ -15,6 +15,8 @@
 #include "WindowManager.h"
 #include "Shape.h"
 #include "Camera.h"
+#include "bone.h"
+
 
 using namespace std;
 using namespace glm;
@@ -101,7 +103,10 @@ public:
         mouseMoveInitialCameraRot = camera->rot;
     }
 
+	bone *root = NULL;
+	int size_stick = 0;
 	void initGeom(const std::string& resourceDirectory) {
+		readtobone(&root);
         shape = make_shared<Shape>();
         shape->loadMesh(resourceDirectory + "/sphere.obj");
         shape->resize();
