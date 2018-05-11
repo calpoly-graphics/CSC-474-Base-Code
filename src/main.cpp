@@ -20,20 +20,20 @@ using namespace std;
 using namespace glm;
 
 double get_last_elapsed_time() {
-	static double lasttime = glfwGetTime();
-	double actualtime = glfwGetTime();
-	double difference = actualtime - lasttime;
-	lasttime = actualtime;
-	return difference;
+    static double lasttime = glfwGetTime();
+    double actualtime = glfwGetTime();
+    double difference = actualtime - lasttime;
+    lasttime = actualtime;
+    return difference;
 }
 
 class Application : public EventCallbacks {
 public:
-	WindowManager *windowManager = nullptr;
+    WindowManager *windowManager = nullptr;
     Camera *camera = nullptr;
 
     std::shared_ptr<Shape> shape;
-	std::shared_ptr<Program> phongShader;
+    std::shared_ptr<Program> phongShader;
     
     double gametime = 0;
     bool wireframeEnabled = false;
@@ -50,8 +50,8 @@ public:
         delete camera;
     }
 
-	void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-		// Movement
+    void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+        // Movement
         if (key == GLFW_KEY_W && action != GLFW_REPEAT) camera->vel.z = (action == GLFW_PRESS) * -0.2f;
         if (key == GLFW_KEY_S && action != GLFW_REPEAT) camera->vel.z = (action == GLFW_PRESS) * 0.2f;
         if (key == GLFW_KEY_A && action != GLFW_REPEAT) camera->vel.x = (action == GLFW_PRESS) * -0.2f;
@@ -74,9 +74,9 @@ public:
             glfwSetInputMode(window, GLFW_CURSOR, mouseCaptured ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
             resetMouseMoveInitialValues(window);
         }
-	}
+    }
 
-	void mouseCallback(GLFWwindow *window, int button, int action, int mods) {
+    void mouseCallback(GLFWwindow *window, int button, int action, int mods) {
         mousePressed = (action != GLFW_RELEASE);
         if (action == GLFW_PRESS) {
             resetMouseMoveInitialValues(window);
@@ -91,7 +91,7 @@ public:
         }
     }
 
-	void resizeCallback(GLFWwindow *window, int in_width, int in_height) { }
+    void resizeCallback(GLFWwindow *window, int in_width, int in_height) { }
     
     // Reset mouse move initial position and rotation
     void resetMouseMoveInitialValues(GLFWwindow *window) {
@@ -101,24 +101,24 @@ public:
         mouseMoveInitialCameraRot = camera->rot;
     }
 
-	void initGeom(const std::string& resourceDirectory) {
+    void initGeom(const std::string& resourceDirectory) {
         shape = make_shared<Shape>();
         shape->loadMesh(resourceDirectory + "/sphere.obj");
         shape->resize();
         shape->init();
-	}
-	
-	void init(const std::string& resourceDirectory) {
-		GLSL::checkVersion();
+    }
+    
+    void init(const std::string& resourceDirectory) {
+        GLSL::checkVersion();
 
-		// Enable z-buffer test.
-		glEnable(GL_DEPTH_TEST);
+        // Enable z-buffer test.
+        glEnable(GL_DEPTH_TEST);
         
-		// Initialize the GLSL programs
+        // Initialize the GLSL programs
         phongShader = std::make_shared<Program>();
         phongShader->setShaderNames(resourceDirectory + "/phong.vert", resourceDirectory + "/phong.frag");
         phongShader->init();
-	}
+    }
     
     glm::mat4 getPerspectiveMatrix() {
         float fov = 3.14159f / 4.0f;
@@ -126,16 +126,16 @@ public:
         return glm::perspective(fov, aspect, 0.01f, 10000.0f);
     }
 
-	void render() {
-		double frametime = get_last_elapsed_time();
-		gametime += frametime;
+    void render() {
+        double frametime = get_last_elapsed_time();
+        gametime += frametime;
 
-		// Clear framebuffer.
-		glClearColor(0.3f, 0.7f, 0.8f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Clear framebuffer.
+        glClearColor(0.3f, 0.7f, 0.8f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Create the matrix stacks.
-		glm::mat4 V, M, P;
+        // Create the matrix stacks.
+        glm::mat4 V, M, P;
         P = getPerspectiveMatrix();
         V = camera->getViewMatrix();
         M = glm::mat4(1);
@@ -148,41 +148,41 @@ public:
         phongShader->setMVP(&M[0][0], &V[0][0], &P[0][0]);
         shape->draw(phongShader, false);
         phongShader->unbind();
-	}
+    }
 };
 
 int main(int argc, char **argv) {
-	std::string resourceDir = "../resources";
-	if (argc >= 2) {
-		resourceDir = argv[1];
-	}
+    std::string resourceDir = "../resources";
+    if (argc >= 2) {
+        resourceDir = argv[1];
+    }
 
-	Application *application = new Application();
+    Application *application = new Application();
 
     // Initialize window.
-	WindowManager * windowManager = new WindowManager();
-	windowManager->init(800, 600);
-	windowManager->setEventCallbacks(application);
-	application->windowManager = windowManager;
+    WindowManager * windowManager = new WindowManager();
+    windowManager->init(800, 600);
+    windowManager->setEventCallbacks(application);
+    application->windowManager = windowManager;
 
-	// Initialize scene.
-	application->init(resourceDir);
-	application->initGeom(resourceDir);
+    // Initialize scene.
+    application->init(resourceDir);
+    application->initGeom(resourceDir);
     
-	// Loop until the user closes the window.
-	while (!glfwWindowShouldClose(windowManager->getHandle())) {
+    // Loop until the user closes the window.
+    while (!glfwWindowShouldClose(windowManager->getHandle())) {
         // Update camera position.
         application->camera->update();
-		// Render scene.
-		application->render();
+        // Render scene.
+        application->render();
 
-		// Swap front and back buffers.
-		glfwSwapBuffers(windowManager->getHandle());
-		// Poll for and process events.
-		glfwPollEvents();
-	}
+        // Swap front and back buffers.
+        glfwSwapBuffers(windowManager->getHandle());
+        // Poll for and process events.
+        glfwPollEvents();
+    }
 
-	// Quit program.
-	windowManager->shutdown();
-	return 0;
+    // Quit program.
+    windowManager->shutdown();
+    return 0;
 }

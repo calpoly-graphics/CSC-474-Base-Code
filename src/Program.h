@@ -8,9 +8,9 @@
 
 class Program {
 public:
-	virtual bool init();
-	virtual void bind();
-	virtual void unbind();
+    virtual bool init();
+    virtual void bind();
+    virtual void unbind();
     void setShaderNames(const std::string &v, const std::string &f, const std::string &g);
     void setShaderNames(const std::string &v, const std::string &f);
     void setVerbose(const bool v) { verbose = v; }
@@ -38,7 +38,7 @@ public:
     void setInt(const char *name, const GLint value);
     
     void setMVP(const GLfloat *M, const GLfloat *V, const GLfloat *P);
-	
+    
 protected:
     std::string vShaderName = ""; // Vertex shader
     std::string gShaderName = ""; // Geometry shader
@@ -49,9 +49,9 @@ private:
     void findAttributesAndUniforms(const std::string &shaderSourceFile);
     
     GLuint pid = 0;
-	std::map<std::string, GLint> attributes;
-	std::map<std::string, GLint> uniforms;
-	bool verbose = true;
+    std::map<std::string, GLint> attributes;
+    std::map<std::string, GLint> uniforms;
+    bool verbose = true;
 };
 
 #endif // LAB471_PROGRAM_H_INCLUDED

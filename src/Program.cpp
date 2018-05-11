@@ -4,14 +4,14 @@
 #include "GLSL.h"
 
 void Program::setShaderNames(const std::string &v, const std::string &f, const std::string &g) {
-	vShaderName = v;
-	fShaderName = f;
-	gShaderName = g;
+    vShaderName = v;
+    fShaderName = f;
+    gShaderName = g;
 }
 
 void Program::setShaderNames(const std::string &v, const std::string &f) {
-	vShaderName = v;
-	fShaderName = f;
+    vShaderName = v;
+    fShaderName = f;
 }
 
 GLuint Program::compileShader(GLenum shaderType, const std::string &shaderSourceFile) {
@@ -48,15 +48,15 @@ bool Program::init() {
     GLuint fragShader = compileShader(GL_FRAGMENT_SHADER, fShaderName);
     GLuint geomShader = compileShader(GL_GEOMETRY_SHADER, gShaderName);
 
-	// Create the program and link it with the compiled shaders
-	pid = glCreateProgram();
-	if (vertShader > 0) CHECKED_GL_CALL(glAttachShader(pid, vertShader));
+    // Create the program and link it with the compiled shaders
+    pid = glCreateProgram();
+    if (vertShader > 0) CHECKED_GL_CALL(glAttachShader(pid, vertShader));
     if (fragShader > 0) CHECKED_GL_CALL(glAttachShader(pid, fragShader));
-	if (geomShader > 0) CHECKED_GL_CALL(glAttachShader(pid, geomShader));
-	CHECKED_GL_CALL(glLinkProgram(pid));
+    if (geomShader > 0) CHECKED_GL_CALL(glAttachShader(pid, geomShader));
+    CHECKED_GL_CALL(glLinkProgram(pid));
     // See whether link was successful
-	CHECKED_GL_CALL(glGetProgramiv(pid, GL_LINK_STATUS, &linkSuccess));
-	if (!linkSuccess) {
+    CHECKED_GL_CALL(glGetProgramiv(pid, GL_LINK_STATUS, &linkSuccess));
+    if (!linkSuccess) {
         if (isVerbose()) {
             GLSL::printProgramInfoLog(pid);
             std::cout << "Error linking shaders " << vShaderName << " and " << fShaderName;
@@ -64,13 +64,13 @@ bool Program::init() {
             else std::cout << std::endl;
         }
         exit(EXIT_FAILURE);
-	}
+    }
     
     // Process the vertex and fragment shader programs to automatically add attribute and uniform variables
     findAttributesAndUniforms(vShaderName);
     findAttributesAndUniforms(fShaderName);
 
-	return linkSuccess;
+    return linkSuccess;
 }
 
 void Program::bind() {
@@ -82,33 +82,33 @@ void Program::unbind() {
 }
 
 void Program::addAttribute(const std::string &name) {
-	attributes[name] = GLSL::getAttribLocation(pid, name.c_str(), isVerbose());
+    attributes[name] = GLSL::getAttribLocation(pid, name.c_str(), isVerbose());
 }
 
 void Program::addUniform(const std::string &name) {
-	uniforms[name] = GLSL::getUniformLocation(pid, name.c_str(), isVerbose());
+    uniforms[name] = GLSL::getUniformLocation(pid, name.c_str(), isVerbose());
 }
 
 GLint Program::getAttribute(const std::string &name) const {
-	std::map<std::string, GLint>::const_iterator attribute = attributes.find(name.c_str());
-	if (attribute == attributes.end()) {
-		if (isVerbose()) {
-			std::cout << name << " is not an attribute variable in " << vShaderName << std::endl;
-		}
-		return -1;
-	}
-	return attribute->second;
+    std::map<std::string, GLint>::const_iterator attribute = attributes.find(name.c_str());
+    if (attribute == attributes.end()) {
+        if (isVerbose()) {
+            std::cout << name << " is not an attribute variable in " << vShaderName << std::endl;
+        }
+        return -1;
+    }
+    return attribute->second;
 }
 
 GLint Program::getUniform(const std::string &name) const {
-	std::map<std::string, GLint>::const_iterator uniform = uniforms.find(name.c_str());
-	if (uniform == uniforms.end()) {
-		if (isVerbose()) {
-			std::cout << name << " is not a uniform variable in " << vShaderName << " or " << fShaderName << std::endl;
-		}
-		return -1;
-	}
-	return uniform->second;
+    std::map<std::string, GLint>::const_iterator uniform = uniforms.find(name.c_str());
+    if (uniform == uniforms.end()) {
+        if (isVerbose()) {
+            std::cout << name << " is not a uniform variable in " << vShaderName << " or " << fShaderName << std::endl;
+        }
+        return -1;
+    }
+    return uniform->second;
 }
 
 // TODO: allow multiple variables on the same line with commas
