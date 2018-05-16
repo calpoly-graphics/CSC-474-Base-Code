@@ -111,7 +111,6 @@ GLint Program::getUniform(const std::string &name) const {
     return uniform->second;
 }
 
-// TODO: allow multiple variables on the same line with commas
 void Program::findAttributesAndUniforms(const std::string &shaderSourceFile) {
     char *fileText = GLSL::textFileRead(shaderSourceFile.c_str());
     char *token;
@@ -139,16 +138,21 @@ void Program::findAttributesAndUniforms(const std::string &shaderSourceFile) {
             char *lineEnding = line + strlen(line) + 1;
             int lastDelimiter = -1;
             int lineEndingLength = strlen(lineEnding);
+            bool openingBracketFound = false;
             for (int i = 0; i < lineEndingLength; i++) {
-                if (lineEnding[i] == ',') {
+                if (lineEnding[i] == ',' || lineEnding[i] == '[') {
+                    if (lineEnding[i] == '[') openingBracketFound = true;
                     lineEnding[i] = '\0';
-                    addUniform(lineEnding + (lastDelimiter + 1));
+                    // Ensure the string is not empty
+                    if (lastDelimiter + 1 < i) addUniform(lineEnding + (lastDelimiter + 1));
                     lastDelimiter = i;
-                } else if (lineEnding[i] == ' ' || lineEnding[i] == '\t') {
+                } else if (openingBracketFound || lineEnding[i] == ']' || lineEnding[i] == ' ' || lineEnding[i] == '\t') {
+                    if (lineEnding[i] == ']') openingBracketFound = false;
                     lastDelimiter = i;
                 }
             }
-            addUniform(lineEnding + (lastDelimiter + 1));
+            // Ensure the string is not empty
+            if (lastDelimiter + 1 < lineEndingLength) addUniform(lineEnding + (lastDelimiter + 1));
         } else if (strcmp(token, "layout") == 0) {
             while((token = strtok(NULL, " ")) != NULL) {
                 lastToken = token;
